@@ -1,38 +1,41 @@
-# INTRODUCTION
+# Introduction
 
-This how-to guide provides a specific step-by-step walkthrough of implementing the [https://developers.facebook.com/docs/facebook-login](Facebook Login) and [https://developers.facebook.com/docs/graph-api](Graph) APIs for their website. This guide is useful for those who have experience in Javascript, AJAX, and managing API calls. When you are done, you will be able to add a login and logout button on your application, update your application's permission access, get a user's list of friends, and post a status to a user's wall.
+This how-to guide provides a specific step-by-step walkthrough of implementing the [Facebook Login](https://developers.facebook.com/docs/facebook-login) and [Graph](https://developers.facebook.com/docs/graph-api) APIs for their website. This guide is useful for those who have experience in Javascript, AJAX, and managing API calls. When you are done, you will be able to add a login and logout button on your application, update your application's permission access, get a user's list of friends, and post a status to a user's wall.
 
-What is Facebook's Login API?
+### What is Facebook's Login API?
 
 The Login API provides developers an easy way to create a Facebook login button for the web or mobile application. 
 
-What is Facebook's Graph API?
+### What is Facebook's Graph API?
 
 The Graph API provides developers an easy way to read and write Facebook data via HTTP requests.
 
-Final Product
+### Final Product
 
-[http://people.oregonstate.edu/~heaneye/login.html](Click here to see the final product.)
+[Click here to see the final product.](http://people.oregonstate.edu/~heaneye/login.html)
 
-[](Click here to see the source code.)
-
-
-SETUP
+[Click here to see the source code.]()
 
 
-1. Create a Facebook Developer Account
-To use any of the Facebook APIs, you will need a Facebook Developer account. Creating one is easy. If you already have a Facebook account you can sign in with that, or create a new account.
-https://developers.facebook.com/
+# Setup
 
-2. Create Application and Get the App ID
+**1. Create a Facebook Developer Account**
+
+To use any of the Facebook APIs, you will need a [Facebook Developer](https://developers.facebook.com/) account. Creating one is easy. If you already have a Facebook account you can sign in with that, or create a new account.
+
+
+**2. Create Application and Get the App ID**
+
 Log in to your Facebook Developer dashboard. Click your profile image at the top right corner and select Add a New App. After you provide an app name, contact email, and verification code you will be taken to the app setup page.
  
 
-3. Implement Facebook SDK for Javascript
+**3. Implement Facebook SDK for Javascript**
+
 Click Get Started next to the Login API. Select Web as the platform. You will be taken to a five step setup process. Provide the site URL and click next. 
+
 You will then be provided with the Facebook SDK for Javascript code. 
-<script>
-  window.fbAsyncInit = function() {
+
+  `window.fbAsyncInit = function() {
     FB.init({
       appId      : '415867265459204',
       cookie     : true,
@@ -48,30 +51,30 @@ You will then be provided with the Facebook SDK for Javascript code.
      js = d.createElement(s); js.id = id;
      js.src = "//connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));
-</script>
-
-There’s a lot going on here. The Facebook SDK handles a lot of the authentication details for us. Behind the scenes, the SDK performs an OAuth authorization of the user. OAuth is a framework that allows third party applications, such as our test site, to obtain limited access to an HTTP services, such as the Facebook user database. The Facebook server will need an access token, or an id credential unique to the user, to grant our application permission to access the user data. Access tokens expire, which require our application to request again. Again, these details are handled by the Facebook SDK for us, but it’s crucial to have an understanding of how it works when we encounter debugging issues down the road.
-
-The window.fbAsyncInit method initializes the Facebook SDK asynchronously. Within this method we will place other asynchronous functions to respond to incoming HTTP requests. The method FB.init() initializes the Facebook SDK while the inscrutible (function(d, s, id) function loads the SDK. Make sure that the appID parameter has the application ID generated from your account. Setting cookie to true will set a cookie on your domain, which will allow for easy user logins. These are the default settings, so you won’t have to change anything.
-
-https://en.wikipedia.org/wiki/OAuth
-
-https://developers.facebook.com/docs/facebook-login/access-tokens/
-
-IMPLEMENTING THE FACEBOOK LOGIN
+   }(document, 'script', 'facebook-jssdk'));`
 
 
-1. Add Login Button
+There’s a lot going on here. The Facebook SDK handles a lot of the authentication details for us. Behind the scenes, the SDK performs an [OAuth](https://en.wikipedia.org/wiki/OAuth) authorization of the user. OAuth is a framework that allows third party applications, such as our test site, to obtain limited access to an HTTP services, such as the Facebook user database. The Facebook server will need an [access token](https://developers.facebook.com/docs/facebook-login/access-tokens/), or an id credential unique to the user, to grant our application permission to access the user data. Access tokens expire, which require our application to request again. Again, these details are handled by the Facebook SDK for us, but it’s crucial to have an understanding of how it works when we encounter debugging issues down the road.
+
+The **window.fbAsyncInit** method initializes the Facebook SDK asynchronously. Within this method we will place other asynchronous functions to respond to incoming HTTP requests. The method **FB.init()** initializes the Facebook SDK while the inscrutible **(function(d, s, id)** function loads the SDK. Make sure that the appID parameter has the application ID generated from your account. Setting cookie to true will set a cookie on your domain, which will allow for easy user logins. These are the default settings, so you won’t have to change anything.
+
+
+# Implementing the Facebook Login API
+
+
+**1. Add Login Button**
+
 There are two ways to implement a login button. We can use Facebook’s pre-built Continue button, seen below. Or we can make our own button via HTML and an event handler.
 
 Button says “Continue with Facebook” if user is not currently logged into Facebook on the same browser.
  
 Button says “Continue with as [user_name]” and displays their profile picture if the user is currently logged into Facebook on the same browser.
  
-	a. Adding a "Continue as " button
-Once again, Facebook makes things easy for you. They have a button generator where you can input the width, photo number, size, text, and more, then generates the HTML code for you. Here is the code I used:
-	<div
+** a. Adding a "Continue as " button**
+
+Once again, Facebook makes things easy for you. They have a (button generator)[https://developers.facebook.com/docs/facebook-login/web/login-button] where you can input the width, photom number, size, text, and more, then generates the HTML code for you. Here is the code I used:
+
+	`<div
 		class="fb-login-button"
 		data-max-rows="1"
 		data-size="large"
@@ -80,20 +83,27 @@ Once again, Facebook makes things easy for you. They have a button generator whe
 		data-auto-logout-link="false"
 		data-use-continue-as="true"
 		scope="public_profile">
-	</div>
-https://developers.facebook.com/docs/facebook-login/web/login-button
-	b. Adding a HTML login button
+	</div>`
+
+**b. Adding a HTML login button**
+	
 Creating your own HTML login button is simple too. Simply create an HTML button and set the onclick attribute to your event handler function.
-	<button onclick="login()">Log in</button>
-In Javascript, call the FB.login method. 
-function login(response) {
-  FB.login(function(response) {
-  }
-}
+	
+	`<button onclick="login()">Log in</button>`
+
+	In Javascript, call the FB.login method. 
+
+	`function login(response) {
+  		FB.login(function(response) {
+  		}
+	}`
+	
 When the user clicks the button will generate the login process. There are three workflows:
+
 1.	User is logged into Facebook on the browser and has logged into the app before. User will be taken to the site directly upon clicking login.
+
 2.	User is logged into Facebook but has never logged into the app before. User must grant the app permission to have access to his or her data. This permission list must be shown to the user.
- 
+
 3.	User is not logged into Facebook. User must provide email and password. 
 
  
