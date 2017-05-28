@@ -70,11 +70,11 @@ Button says “Continue with Facebook” if user is not currently logged into Fa
  
 Button says “Continue with as [user_name]” and displays their profile picture if the user is currently logged into Facebook on the same browser.
  
-** a. Adding a "Continue as " button**
+**a. Adding a "Continue as " button**
 
 Once again, Facebook makes things easy for you. They have a (button generator)[https://developers.facebook.com/docs/facebook-login/web/login-button] where you can input the width, photom number, size, text, and more, then generates the HTML code for you. Here is the code I used:
 
-	`<div
+	<div
 		class="fb-login-button"
 		data-max-rows="1"
 		data-size="large"
@@ -83,20 +83,20 @@ Once again, Facebook makes things easy for you. They have a (button generator)[h
 		data-auto-logout-link="false"
 		data-use-continue-as="true"
 		scope="public_profile">
-	</div>`
+	</div>
 
 **b. Adding a HTML login button**
 	
 Creating your own HTML login button is simple too. Simply create an HTML button and set the onclick attribute to your event handler function.
 	
-	`<button onclick="login()">Log in</button>`
+	<button onclick="login()">Log in</button>
 
 	In Javascript, call the FB.login method. 
 
-	`function login(response) {
+	function login(response) {
   		FB.login(function(response) {
   		}
-	}`
+	}
 	
 When the user clicks the button will generate the login process. There are three workflows:
 
@@ -109,8 +109,10 @@ When the user clicks the button will generate the login process. There are three
  
 Facebook remembers if a user’s application authorizations. So if they have logged into the app before, they will be immediately logged in. If not, they will have to grant access.
 	
-2. Check the Login Status
+**2. Check the Login Status**
+
 To make our site dynamic, we will need to check if the user is logged in or not. We do this via the method FB.getLoginStatus(). 
+	
 	FB.getLoginStatus(function(response) {
     		if (response.status === 'connected') {
       			// user is connected
@@ -122,37 +124,48 @@ To make our site dynamic, we will need to check if the user is logged in or not.
       			// user is logged out of facebook
     		}
 	});
-We pass the method a function parameter. It will return a response object. The response object is structured as below:
-	Status
-		connected: the person is logged into Facebook and has logged into your app. If your 			browser has cookies turned on, you will be logged into your app
-		not_authorized: the person is logged into Facebook, but has not logged into your app. 			You will be asked to 
-		unknown: the person is not logged into Facebook, thus you don’t know if they’ve logged 		into your app before.
+	
+We pass the method a function parameter. It will return a response JSON object. The response object is structured as below:
+	
+**status** returns the login status, which can be one of the three:
+		
+**connected:** the person is logged into Facebook and has logged into your app. If your browser has cookies turned on, you will be logged into your app
+**not_authorized:** the person is logged into Facebook, but has not logged into your app. You will be asked to 
+**unknown:** the person is not logged into Facebook, thus you don’t know if they’ve logged into your app before.
 
-	authResponse is included if the status is connected and is made up of the following:
-	    	accessToken: contains an access token for the person using the app.
-	    	expiresIn: indicates the UNIX time when the token expires and needs to be 				renewed.
-    		signedRequest - a signed parameter that contains information about the 				person using the app.
-    		userID - the ID of the person using the app. 
+**authResponse** is included if the status is connected and is made up of the following:
+
+**accessToken:** contains an access token for the person using the app.
+**expiresIn:** indicates the UNIX time when the token expires and needs to be renewed.
+**signedRequest:** a signed parameter that contains information about the person using the app.
+**userID:** the ID of the person using the app. 
 
 It’s a good idea to print the JSON object to console or to your page to confirm you are getting the response. In my demo app, I parsed the object and placed it on the page for easy access:
  
+**3. Making our site synchronous**
 
 So far we have added the login button and verified user login with simple print statements. However, you may have noticed that your page does not update until after a page refresh. This is because the FB.getLoginStatus is synchronous; it will only get called once when the page loads.
-To fix this, we need to perform asynchronous calls to the API to check for status changes. The Facebook API performs asynchrnous calls via the FB.Event.subscribe() method. It takes two parameters: the event to listen to and a callback function. 
+
+To fix this, we need to perform asynchronous calls to the API to check for status changes. The Facebook API performs asynchronous calls via the FB.Event.subscribe() method. It takes two parameters: the event to listen to and a callback function.
+
 		FB.Event.subscribe('auth.statusChange', statusChange);
+		
 The FB.Event.subscribe() method needs to be called within the window.fbAsyncInit() method. Create a new function called statusChange(response) which will call the FB.getLoginStatus() method. Now the page will update as login status updates. 
-3. Add logout Button
+
+**4. Add logout Button**
 Adding a logout button is straightforward. Simply use the FB.logout() method. 
+
 		function logOut() {
   			FB.logout(function(response) {
  			});
 		}
 
-4. Permissions
+**4. Permissions**
 	
-	At this point in the how-to guide, it is necessary to take step back and discuss how Facebbok manages permissions.
-https://developers.facebook.com/docs/facebook-login/permissions/
-	Permissions allow an application read and write priviledges for an entity. As of May 2017, Facebook offers 45 granular permissions, all of which are listed in their reference page. When a user logs into their account, they authorize a set of permissions. These permissions must be approved by the user beforehand. The default permission is public_profile, which is granted during every login. It includes the following data:
+At this point in the how-to guide, it is necessary to take step back and discuss how Facebook manages [permissions](https://developers.facebook.com/docs/facebook-login/permissions/).
+
+Permissions allow an application read and write priviledges for an entity. As of May 2017, Facebook offers 45 granular permissions, all of which are listed in their reference page. When a user logs into their account, they authorize a set of permissions. These permissions must be approved by the user beforehand. The default permission is public_profile, which is granted during every login. It includes the following data:
+
 •	id
 •	cover
 •	name
@@ -166,22 +179,21 @@ https://developers.facebook.com/docs/facebook-login/permissions/
 •	timezone
 •	updated_time
 •	verified
-The public_profile, email, and user_friends are all available to developers to use at any time. To use any other permissions, however, requires submitting the application to Facebook for review. Please see their review process for more information.
-https://developers.facebook.com/docs/apps/review
 
-		Requesting and Granting permsissions
+The public_profile, email, and user_friends are all available to developers to use at any time. To use any other permissions, however, requires submitting the application to Facebook for review. Please see their [review process](https://developers.facebook.com/docs/apps/review) for more information.
 
-		It is common for applications to only request the public_profile permission upon login, but request further authorization to allow the user access to deeper functionality. In order to request granular permissions, we use the the FB.login method and pass the permission name via the scope parameter. 
+**Requesting and Granting permsissions**
 
-	
+It is common for applications to only request the public_profile permission upon login, but request further authorization to allow the user access to deeper functionality. In order to request granular permissions, we use the the FB.login method and pass the permission name via the scope parameter. 
+
 		function grantFriendsPermission () {
  			FB.login(function(response) {
  			}, {scope: 'user_friends'});
 		}
 
-		Revoking Permissions
+**Revoking Permissions**
 		
-		It is also important to allow users to revoke an applications access to their data at any time. To do so, we use the FB.api method. If the following code looks alien, don't worry, this is Graph API method. We will discuss the details of this method in the section below.
+It is also important to allow users to revoke an applications access to their data at any time. To do so, we use the **FB.api** method. If the following code looks alien, don't worry, this is Graph API method. We will discuss the details of this method in the section below.
 
 		function revokeFriendPermission() {
   			FB.api(
@@ -195,12 +207,12 @@ https://developers.facebook.com/docs/apps/review
   			);
 		}
 
-		The important thing to know now is that we pass the permission name via [user_id]/permissions/[permission_name] as the first argument and DELETE as the second argument.
+The important thing to know now is that we pass the permission name via [user_id]/permissions/[permission_name] as the first argument and DELETE as the second argument.
 
 
-		Requesting and Granting Permissions (revisited)
+**Requesting and Granting Permissions (revisited)**
 
-		To improve user experience, Facebook discourages applications from re-requesting permissions after they have been revoked. They don't want to sponsor applications that spam their users into giving away data permissions. However, we can do this by passing the argument auth_type: 'rerequest', as seen below.
+To improve user experience, Facebook discourages applications from re-requesting permissions after they have been revoked. They don't want to sponsor applications that spam their users into giving away data permissions. However, we can do this by passing the argument auth_type: 'rerequest', as seen below.
 
 		function grantFriendsPermission () {
  			FB.login(function(response) {
@@ -210,50 +222,48 @@ https://developers.facebook.com/docs/apps/review
 
 
 
-IMPLEMENTING GRAPH API
+# Implementing the Graph API
 
 
-1. Graph API Structure
+**1. Graph API Structure**
 
-	Facebook's Graph API is structured like a mathematical graph with nodes and edges. Each node represents an entity, such as a user, a photo, a comment, or a page, while each edge represents the connection between entities, such as a user's photo or a photo's comment. Finally, their are fields, which is data related to these entities.
+Facebook's Graph API is structured like a mathematical graph with nodes and edges. Each node represents an entity, such as a user, a photo, a comment, or a page, while each edge represents the connection between entities, such as a user's photo or a photo's comment. Finally, their are fields, which is data related to these entities.
 
-	To reference a graph object, follow the syntax below:
+To reference a graph object, follow the syntax below:
 	
 	/[node_id]/[edge_id]/[field_id]
 
-	For example, if we want to reference the current user's friends, we write
+For example, if we want to reference the current user's friends, we write
 	
 	/me/friends
 
-	We will use this syntax repeatedly within this section, so it's a good idea to get familiar with it. You can play around with it more using the Graph API Explorer.
-
-https://developers.facebook.com/tools/explorer
+We will use this syntax repeatedly within this section, so it's a good idea to get familiar with it. You can play around with it more using the [Graph API Explorer](https://developers.facebook.com/tools/explorer).
 
 
-2. Making Calls with the FB.api() Method
+**2. Making Calls with the FB.api() Method**
 
-	The FB.api() lets you make calls to the Graph API. It takes the four arguments:
+The FB.api() lets you make calls to the Graph API. It takes the four arguments:
 
-		path: The graph endpoint you want to call (e.g. 'me/friends').
-		method: The HTTP method. It accepts the following: 'GET', 'POST', 'DELETE'. 		The default is 'GET', which we will be using for most of this guide.
-		params: this takes an object of parameters that can be passed to the API call. This is useful for more advanced functionality and passing access tokens. We will discuss this in detail later.
-		callback: This takes a callback function that will be triggered whenever the API returns a response. The response object contains the API result.
+**path:** The graph endpoint you want to call (e.g. 'me/friends').
+**method:** The HTTP method. It accepts the following: 'GET', 'POST', 'DELETE'. The default is 'GET', which we will be using for most of this guide.
+**params:** this takes an object of parameters that can be passed to the API call. This is useful for more advanced functionality and passing access tokens. We will discuss this in detail later.
+**callback:** This takes a callback function that will be triggered whenever the API returns a response. The response object contains the API result.
 
 
-3. Reading User Data via a GET Request
+**3. Reading User Data via a GET Request**
 
-	Let's use the FB.api() method to get the current user's public profile data. To do 	this, type the following:
+Let's use the FB.api() method to get the current user's public profile data. To do this, type the following:
 
 	function getPublicProfileData(response) {
   		FB.api('/me', {fields: publicProfile}, function(response) {
     			console.log(response);
   		})
 	}
-  
+ 
 
-	In your console you should see the public profile data.
+In your console you should see the public profile data.
 
 
-4. Writing User Data via a POST Request
+**4. Writing User Data via a POST Request**
 
-	Let's use the FB.api() to post a status to the current user's wall from within our application. This will require us to get the publish_actions permission from the user. Since this permission requires Facebook approval to use, this guide will walk you through how to create the POST request. The application will state the public_profile permission is 'granted', but the Facebook API will prevent any actions related to it.
+Let's use the FB.api() to post a status to the current user's wall from within our application. This will require us to get the publish_actions permission from the user. Since this permission requires Facebook approval to use, this guide will walk you through how to create the POST request. The application will state the public_profile permission is 'granted', but the Facebook API will prevent any actions related to it.
