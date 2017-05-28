@@ -16,6 +16,42 @@ The Graph API provides developers an easy way to read and write Facebook data vi
 
 [Click here to see the source code.](https://github.com/ehean/ehean.github.io)
 
+### Helper Functions
+
+Throughout the guide, I use a handful of helper functions to make HTML manipulation easier. Feel free to use them. 
+
+	function makeBold(str) {
+	  return '<strong>' + str+ '</strong>';
+	}
+
+	function populateDiv(id, key, val) {
+	  document.getElementById(id).innerHTML = makeBold(key) + val;
+	}
+
+	function removeChildren(parent) {
+	  var p = document.getElementById(parent);
+	  console.log("remove children called");
+	  while (p.firstChild) {
+	    p.removeChild(p.firstChild);
+	    console.log(p.firstChild + "removed");
+	  }
+	}
+
+	function clearData() {
+	  console.log("clear data called");
+	  removeChildren("authResponseData");
+	  removeChildren("userData");
+	  removeChildren("permissionData");
+	  removeChildren("friendData");
+	}
+
+	function createAndAppendDiv(id, parent, key, val) {
+	  var newDiv = document.createElement("div");
+	  parent.appendChild(newDiv);
+	  newDiv.id = id;
+	  populateDiv(newDiv.id, key, val);
+	}
+
 
 # Setup
 
@@ -150,6 +186,14 @@ We pass the method a function parameter. It will return a response JSON object. 
 **userID:** the ID of the person using the app. 
 
 It’s a good idea to print the JSON object to console or to your page to confirm you are getting the response. In my demo app, I parsed the object and placed it on the page for easy access:
+
+	function getAuthResponseData(response) {
+  		populateDiv('status', 'you are connected', '');
+  		populateDiv('accessToken', 'Access Token: ', response.authResponse.accessToken);
+		populateDiv('expiresIn', 'Expires in (UNIX time): ', response.authResponse.expiresIn);
+		populateDiv('signedRequest', 'Signed Request: ', response.authResponse.signedRequest);
+		populateDiv('userID', 'User ID: ', response.authResponse.userID);
+	}
 
 ![auth_response_data](https://github.com/ehean/ehean.github.io/blob/master/imgs/authResponseData.png)
  
