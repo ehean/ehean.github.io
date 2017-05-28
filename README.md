@@ -170,21 +170,21 @@ We pass the method a function parameter. It will return a response JSON object. 
 	
 **status** returns the login status, which can be one of the three:
 		
-**connected:** the person is logged into Facebook and has logged into your app. If your browser has cookies turned on, you will be logged into your app
+   **connected:** the person is logged into Facebook and has logged into your app. If your browser has cookies turned on, you will be logged into your app
 
-**not_authorized:** the person is logged into Facebook, but has not logged into your app. You will be asked to 
+   **not_authorized:** the person is logged into Facebook, but has not logged into your app. You will be asked to 
 
-**unknown:** the person is not logged into Facebook, thus you don’t know if they’ve logged into your app before.
+   **unknown:** the person is not logged into Facebook, thus you don’t know if they’ve logged into your app before.
 
 **authResponse** is included if the status is connected and is made up of the following:
 
-**accessToken:** contains an access token for the person using the app.
+   **accessToken:** contains an access token for the person using the app.
 
-**expiresIn:** indicates the UNIX time when the token expires and needs to be renewed.
+   **expiresIn:** indicates the UNIX time when the token expires and needs to be renewed.
 
-**signedRequest:** a signed parameter that contains information about the person using the app.
+   **signedRequest:** a signed parameter that contains information about the person using the app.
 
-**userID:** the ID of the person using the app. 
+  **userID:** the ID of the person using the app. 
 
 It’s a good idea to print the JSON object to console or to your page to confirm you are getting the response. In my demo app, I parsed the object and placed it on the page for easy access:
 
