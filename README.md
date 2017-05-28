@@ -35,24 +35,24 @@ Click Get Started next to the Login API. Select Web as the platform. You will be
 
 You will then be provided with the Facebook SDK for Javascript code. 
 
-  `window.fbAsyncInit = function() {
-    FB.init({
-      appId      : '415867265459204',
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v2.8'
-    });
-    FB.AppEvents.logPageView();   
-  };
+	window.fbAsyncInit = function() {
+		FB.init({
+     			appId      : '415867265459204',
+      			cookie     : true,
+      			xfbml      : true,
+      			version    : 'v2.8'
+    		});
+    
+    		FB.AppEvents.logPageView();   
+  	};
 
-  (function(d, s, id){
-     var js, fjs = d.getElementsByTagName(s)[0];
-     if (d.getElementById(id)) {return;}
-     js = d.createElement(s); js.id = id;
-     js.src = "//connect.facebook.net/en_US/sdk.js";
-     fjs.parentNode.insertBefore(js, fjs);
-   }(document, 'script', 'facebook-jssdk'));`
-
+	(function(d, s, id){
+     		var js, fjs = d.getElementsByTagName(s)[0];
+     		if (d.getElementById(id)) {return;}
+     		js = d.createElement(s); js.id = id;
+     		js.src = "//connect.facebook.net/en_US/sdk.js";
+     		fjs.parentNode.insertBefore(js, fjs);
+   	}(document, 'script', 'facebook-jssdk'));`
 
 There’s a lot going on here. The Facebook SDK handles a lot of the authentication details for us. Behind the scenes, the SDK performs an [OAuth](https://en.wikipedia.org/wiki/OAuth) authorization of the user. OAuth is a framework that allows third party applications, such as our test site, to obtain limited access to an HTTP services, such as the Facebook user database. The Facebook server will need an [access token](https://developers.facebook.com/docs/facebook-login/access-tokens/), or an id credential unique to the user, to grant our application permission to access the user data. Access tokens expire, which require our application to request again. Again, these details are handled by the Facebook SDK for us, but it’s crucial to have an understanding of how it works when we encounter debugging issues down the road.
 
@@ -62,7 +62,7 @@ The **window.fbAsyncInit** method initializes the Facebook SDK asynchronously. W
 # Implementing the Facebook Login API
 
 
-**1. Add Login Button**
+**1. Adding a Login Button**
 
 There are two ways to implement a login button. We can use Facebook’s pre-built Continue button, seen below. Or we can make our own button via HTML and an event handler.
 
@@ -85,7 +85,7 @@ Once again, Facebook makes things easy for you. They have a (button generator)[h
 		scope="public_profile">
 	</div>
 
-**b. Adding a HTML login button**
+**b. Adding a HTML Login Button**
 	
 Creating your own HTML login button is simple too. Simply create an HTML button and set the onclick attribute to your event handler function.
 	
@@ -109,7 +109,7 @@ When the user clicks the button will generate the login process. There are three
  
 Facebook remembers if a user’s application authorizations. So if they have logged into the app before, they will be immediately logged in. If not, they will have to grant access.
 	
-**2. Check the Login Status**
+**2. Checking the Login Status**
 
 To make our site dynamic, we will need to check if the user is logged in or not. We do this via the method FB.getLoginStatus(). 
 	
@@ -142,7 +142,7 @@ We pass the method a function parameter. It will return a response JSON object. 
 
 It’s a good idea to print the JSON object to console or to your page to confirm you are getting the response. In my demo app, I parsed the object and placed it on the page for easy access:
  
-**3. Making our site synchronous**
+**3. Making the Site Asynchronous**
 
 So far we have added the login button and verified user login with simple print statements. However, you may have noticed that your page does not update until after a page refresh. This is because the FB.getLoginStatus is synchronous; it will only get called once when the page loads.
 
@@ -152,7 +152,7 @@ To fix this, we need to perform asynchronous calls to the API to check for statu
 		
 The FB.Event.subscribe() method needs to be called within the window.fbAsyncInit() method. Create a new function called statusChange(response) which will call the FB.getLoginStatus() method. Now the page will update as login status updates. 
 
-**4. Add logout Button**
+**4. Adding a Logout Button**
 Adding a logout button is straightforward. Simply use the FB.logout() method. 
 
 		function logOut() {
@@ -160,7 +160,7 @@ Adding a logout button is straightforward. Simply use the FB.logout() method.
  			});
 		}
 
-**4. Permissions**
+**5. Managing Permissions**
 	
 At this point in the how-to guide, it is necessary to take step back and discuss how Facebook manages [permissions](https://developers.facebook.com/docs/facebook-login/permissions/).
 
@@ -225,7 +225,7 @@ To improve user experience, Facebook discourages applications from re-requesting
 # Implementing the Graph API
 
 
-**1. Graph API Structure**
+**1. The Graph API Structure**
 
 Facebook's Graph API is structured like a mathematical graph with nodes and edges. Each node represents an entity, such as a user, a photo, a comment, or a page, while each edge represents the connection between entities, such as a user's photo or a photo's comment. Finally, their are fields, which is data related to these entities.
 
@@ -266,4 +266,35 @@ In your console you should see the public profile data.
 
 **4. Writing User Data via a POST Request**
 
-Let's use the FB.api() to post a status to the current user's wall from within our application. This will require us to get the publish_actions permission from the user. Since this permission requires Facebook approval to use, this guide will walk you through how to create the POST request. The application will state the public_profile permission is 'granted', but the Facebook API will prevent any actions related to it.
+Let's use the FB.api() to post a status to the current user's wall from within our application. This will require us to get the publish_actions permission from the user. This guide will walk you through how to create the POST request, but since the publish_actions permisssion requires approval by Facebook to use, we will not be able to verify the code. The application will state the publish_actions permission is 'granted', but the Facebook API will prevent any actions related to it.
+
+**a. Get publish_actions permission**
+
+Get the publish_actions permission from the user. This can be done via the FB.login method.
+
+	function grantPublishPermission(response) {
+  		FB.login(function(response) {
+  		}, {scope:'publish_actions'});
+	}
+	
+**b. Send POST Request**
+
+Use the FB.api() method to send a POST request. For the first parameter we will pass **me/feed**, which is the status node. In the second parameter we will pass **POST** as the method. For the third parameter we will pass the access token (which must be retrieved from response.authResponse.access_token) and the message. Finally we will pass the callback function to handle the response.
+
+	function postStatus() {
+  		FB.api(
+    		"/me/feed",
+    		"POST",
+    		{  "access_token": accessToken, "message": "hello world" },
+    		function (response) {
+      			if (response && !response.error) {
+        			console.log("status posted successfully");
+      			}
+      			else {
+        			console.log("error: " + JSON.stringify(response.error));
+        		}
+    		}
+  		);
+	}
+
+Again, using this functionality will require approval by Facebook to work.
