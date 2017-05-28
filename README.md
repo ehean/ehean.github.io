@@ -14,7 +14,7 @@ The Graph API provides developers an easy way to read and write Facebook data vi
 
 [Click here to see the final product.](http://people.oregonstate.edu/~heaneye/login.html)
 
-[Click here to see the source code.]()
+[Click here to see the source code.](https://github.com/ehean/ehean.github.io)
 
 
 # Setup
@@ -28,6 +28,7 @@ To use any of the Facebook APIs, you will need a [Facebook Developer](https://de
 
 Log in to your Facebook Developer dashboard. Click your profile image at the top right corner and select Add a New App. After you provide an app name, contact email, and verification code you will be taken to the app setup page.
  
+ ![dashboard](https://github.com/ehean/ehean.github.io/blob/master/imgs/dashboard.png)
 
 **3. Implement Facebook SDK for Javascript**
 
@@ -67,8 +68,12 @@ The **window.fbAsyncInit** method initializes the Facebook SDK asynchronously. W
 There are two ways to implement a login button. We can use Facebook’s pre-built Continue button, seen below. Or we can make our own button via HTML and an event handler.
 
 Button says “Continue with Facebook” if user is not currently logged into Facebook on the same browser.
+
+![continue_with_fb](https://github.com/ehean/ehean.github.io/blob/master/imgs/continue_w_fb.png)
  
 Button says “Continue with as [user_name]” and displays their profile picture if the user is currently logged into Facebook on the same browser.
+
+![continue_as_user](https://github.com/ehean/ehean.github.io/blob/master/imgs/continue_as_user.PNG)
  
 **a. Adding a "Continue as " button**
 
@@ -104,7 +109,11 @@ When the user clicks the button will generate the login process. There are three
 
 2.	User is logged into Facebook but has never logged into the app before. User must grant the app permission to have access to his or her data. This permission list must be shown to the user.
 
+![review_permission](https://github.com/ehean/ehean.github.io/blob/master/imgs/grant_email_permission_window.PNG)
+
 3.	User is not logged into Facebook. User must provide email and password. 
+
+![sign_in](https://github.com/ehean/ehean.github.io/blob/master/imgs/sign_into_facebook.PNG)
 
  
 Facebook remembers if a user’s application authorizations. So if they have logged into the app before, they will be immediately logged in. If not, they will have to grant access.
@@ -141,6 +150,8 @@ We pass the method a function parameter. It will return a response JSON object. 
 **userID:** the ID of the person using the app. 
 
 It’s a good idea to print the JSON object to console or to your page to confirm you are getting the response. In my demo app, I parsed the object and placed it on the page for easy access:
+
+![auth_response_data](https://github.com/ehean/ehean.github.io/blob/master/imgs/authResponseData.png)
  
 **3. Making the Site Asynchronous**
 
