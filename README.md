@@ -30,15 +30,12 @@ Throughout the guide, I use a handful of helper functions to make HTML manipulat
 
 	function removeChildren(parent) {
 	  var p = document.getElementById(parent);
-	  console.log("remove children called");
 	  while (p.firstChild) {
 	    p.removeChild(p.firstChild);
-	    console.log(p.firstChild + "removed");
 	  }
 	}
 
 	function clearData() {
-	  console.log("clear data called");
 	  removeChildren("authResponseData");
 	  removeChildren("userData");
 	  removeChildren("permissionData");
@@ -51,7 +48,6 @@ Throughout the guide, I use a handful of helper functions to make HTML manipulat
 	  newDiv.id = id;
 	  populateDiv(newDiv.id, key, val);
 	}
-
 
 # Setup
 
